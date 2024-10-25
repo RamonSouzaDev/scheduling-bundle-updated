@@ -3,15 +3,14 @@
 {% trans_default_domain 'NovosgaSchedulingBundle' %}
 
 {% block body %}
-    <h1>
-        <i class="fa fa-address-book" aria-hidden="true"></i>
-        {{ 'title'|trans }}
-        <small>
-            {{ 'subtitle'|trans }}
-        </small>
-    </h1>
-        
-    <hr>
+    <div class="d-flex">
+        <div>
+            <h1>
+                <i class="fa fa-address-book" aria-hidden="true"></i> {{ 'title'|trans }}
+            </h1>
+            <p>{{ 'subtitle'|trans }}</p>
+        </div>
+    </div>
 
     {% if entity.oid %}
         <div class="alert alert-info">
@@ -63,17 +62,15 @@
         </div>
 
         {{ form_row(form.cliente.observacao) }}
-        
-        <hr>
 
-        <div class="buttons">
+        <div class="d-flex">
             {% if not entity.dataConfirmacao %}
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-check"></i> 
                     {{ 'button.save'|trans }}
                 </button>
             {% endif %}
-            <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-secondary">
+            <a href="{{ path('novosga_scheduling_index') }}" class="btn btn-link text-decoration-none ms-2">
                 <i class="fa fa-chevron-left"></i>
                 {{ 'button.back'|trans }}
             </a>
