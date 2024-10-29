@@ -3,69 +3,70 @@
 {% trans_default_domain 'NovosgaSchedulingBundle' %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-6  col-lg-8">
-            <h1>
-                <i class="fa fa-address-book" aria-hidden="true"></i>
+    <div class="row mb-4">
+        <div class="col-8">
+            <h2>
+                <i class="fas fa-calendar-alt me-2"></i>
                 {{ 'title'|trans }}
-                <small>
-                    {{ 'subtitle'|trans }}
-                </small>
-            </h1>
+            </h2>
+            <small class="text-muted">{{ 'subtitle'|trans }}</small>
         </div>
-        <div class="col-md-6 col-lg-4 text-right">
-            <form class="form-inline">
-                <div class="input-group">
-                    <select class="form-control" name="situacao">
-                        <option disabled>{{ 'label.status'|trans }}</option>
-                        <option value="agendado" {% if app.request.get('situacao') == 'agendado' %}selected{% endif %}>{{ 'label.status_agendado'|trans }}</option>
-                        <option value="confirmado" {% if app.request.get('situacao') == 'confirmado' %}selected{% endif %}>{{ 'label.status_confirmado'|trans }}</option>
-                        <option value="nao_compareceu" {% if app.request.get('situacao') == 'nao_compareceu' %}selected{% endif %}>{{ 'label.status_nao_compareceu'|trans }}</option>
-                    </select>
-                    <input type="text" class="form-control" name="q" placeholder="{{ 'label.search'|trans }}" value="{{ app.request.get('q') }}">
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-secondary">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </span>
-                </div>
-                <a href="{{ path('novosga_scheduling_new') }}" class="btn btn-primary ml-auto">
-                    <i class="fa fa-plus"></i>
-                    {{ 'button.new_scheduling'|trans }}
-                </a>
-            </form>
+        <div class="col-4 text-end">
+            <a href="{{ path('novosga_scheduling_new') }}" class="btn btn-primary">
+                <i class="fa fa-plus"></i>
+                {{ 'button.new_scheduling'|trans }}
+            </a>
         </div>
     </div>
-        
-    <hr>
-    
-    <table class="table table-bordered">
-        <thead class="thead-light">
-            <th>#</th>
-            <th>{{ 'label.date'|trans }}</th>
-            <th>{{ 'label.time'|trans }}</th>
-            <th>{{ 'label.customer_id'|trans }}</th>
-            <th>{{ 'label.name'|trans }}</th>
-            <th>{{ 'label.service'|trans }}</th>
-            <th></th>
+
+    <form method="GET" action="{{ path('novosga_scheduling_index') }}" class="scheduling-search">
+        <div class="row mb-4">
+            <div class="col-3">
+                <select class="form-control" name="situacao">
+                    <option value="nao_compareceu" {% if app.request.get('situacao') == 'nao_compareceu' %}selected{% endif %}>
+                        {{ 'label.status_nao_compareceu'|trans }}
+                    </option>
+                    <option value="agendado" {% if app.request.get('situacao') == 'agendado' %}selected{% endif %}>
+                        {{ 'label.status_agendado'|trans }}
+                    </option>
+                    <option value="confirmado" {% if app.request.get('situacao') == 'confirmado' %}selected{% endif %}>
+                        {{ 'label.status_confirmado'|trans }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-7">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" placeholder="{{ 'label.search'|trans }}" value="{{ app.request.get('q') }}">
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <table class="table">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>{{ 'label.date'|trans }}</th>
+                <th>{{ 'label.time'|trans }}</th>
+                <th>{{ 'label.customer_id'|trans }}</th>
+                <th>{{ 'label.name'|trans }}</th>
+                <th>{{ 'label.service'|trans }}</th>
+                <th class="text-center" width="60"></th>
+            </tr>
         </thead>
         <tbody>
             {% for agendamento in agendamentos %}
-                {% set bgclass = '' %}
-                {% if agendamento.situacao == 'nao_compareceu' %}
-                    {% set bgclass = 'table-danger' %}
-                {% elseif agendamento.situacao == 'confirmado' %}
-                    {% set bgclass = 'table-success' %}
-                {% endif %}
-                <tr class="{{ bgclass }}">
+                <tr>
                     <td>{{ agendamento.id }}</td>
                     <td>{{ agendamento.data|date('d/m/Y') }}</td>
                     <td>{{ agendamento.hora|date('H:i') }}</td>
                     <td>{{ agendamento.cliente.documento }}</td>
                     <td>{{ agendamento.cliente.nome }}</td>
                     <td>{{ agendamento.servico.nome }}</td>
-                    <td class="text-right">
-                        <a href="{{ path('novosga_scheduling_edit', { id: agendamento.id }) }}" class="btn btn-secondary">
+                    <td class="text-center">
+                        <a href="{{ path('novosga_scheduling_edit', { id: agendamento.id }) }}" class="btn btn-primary btn-sm">
                             <i class="fa fa-edit"></i>
                         </a>
                     </td>
@@ -75,11 +76,50 @@
     </table>
             
     {{ paginacao|raw }}
+{% endblock %}
 
-    <p class="links">
-        <a href="{{ path('novosga_scheduling_config_index') }}" class="btn btn-secondary">
-            <i class="fa fa-cog"></i>&nbsp;
-            {% trans %}Configuração{% endtrans %}
-        </a>
-    </p>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table {
+            font-size: 14px;
+            background: white;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+        }
+
+        .table thead th {
+            font-weight: 500;
+            border-bottom: none;
+        }
+
+        .btn-primary {
+            background-color: #3949AB;
+            border-color: #3949AB;
+        }
+
+        .btn-primary:hover {
+            background-color: #303F9F;
+            border-color: #303F9F;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
 {% endblock %}
